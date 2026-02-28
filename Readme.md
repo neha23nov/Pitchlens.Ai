@@ -2,7 +2,7 @@
 
 > Investor-grade AI analysis for startup founders. See your pitch through the eyes of different VCs — powered by Endee vector search, semantic similarity, and RAG-based evaluation.
 
-![PitchLens AI](https://img.shields.io/badge/Vector_DB-Endee-f59e0b?style=flat-square) ![Next.js](https://img.shields.io/badge/Frontend-Next.js_15-black?style=flat-square) ![Groq](https://img.shields.io/badge/AI-Groq_Llama_3.3-blue?style=flat-square) ![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
+![PitchLens AI](https://img.shields.io/badge/Vector_DB-Endee-f59e0b?style=flat-square) ![Next.js](https://img.shields.io/badge/Frontend-Next.js_15-black?style=flat-square) ![Groq](https://img.shields.io/badge/AI-Groq_Llama_3.3-blue?style=flat-square) 
 
 ---
 
@@ -258,36 +258,5 @@ Go to `http://localhost:3000` in your browser.
 - Growth VC → focuses on traction, market size, growth rate
 - Fintech VC → focuses on compliance, revenue model, partnerships
 - Impact VC → focuses on social impact, sustainability, mission
-
----
-
-## 🚀 Deployment
-
-| Service | Platform |
-|---------|----------|
-| Frontend | Vercel |
-| Embedding Service | Railway |
-| Vector Database | Endee Cloud |
-| AI Model | Groq API |
-
-See `DEPLOYMENT.md` for full deployment instructions.
-
----
-
-## 🏗️ Built For
-
-Endee.io SDE Internship Evaluation — demonstrates:
-- ✅ Semantic Search using Endee vector database
-- ✅ RAG (Retrieval Augmented Generation) pipeline
-- ✅ Recommendations based on vector similarity
-- ✅ Full-stack AI application with Next.js
-- ✅ Microservice architecture with Python embedding service
-- ✅ Persona-aware AI evaluation system
-
----
-
-## 📄 License
-
-MIT License — free to use, modify, and distribute.
 
 ---
