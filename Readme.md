@@ -6,9 +6,19 @@
 
 ---
 
+## ⭐ Endee Repository
+
+This project was built on top of the official Endee vector database.
+
+- ✅ Starred: [endee-io/endee](https://github.com/endee-io/endee)
+- ✅ Forked: [neha23nov/endee](https://github.com/neha23nov/endee)
+- ✅ Endee used as the core vector database for semantic search and RAG pipeline
+
+---
+
 ## 📌 Problem Statement
 
-Most startup founders receive generic, surface-level feedback on their pitches. They have no way to benchmark their pitch against successful ones, understand how different investors evaluate their idea, or get actionable, structured improvements before speaking to real investors.
+Most startup founders receive generic, surface-level feedback on their pitches. They have no way to benchmark their pitch against successful ones, understand how different investors evaluate their idea, or get actionable structured improvements before speaking to real investors.
 
 **PitchLens solves this** by combining vector similarity search with LLM-powered evaluation to give founders investor-grade feedback in seconds.
 
@@ -26,7 +36,7 @@ Most startup founders receive generic, surface-level feedback on their pitches. 
    - Strengths, weaknesses, actionable suggestions
    - AI-rewritten improved version of the pitch
    - Investor verdict from the selected VC perspective
-   - Similar pitches from the vector database
+   - Similar pitches retrieved from Endee vector database
 
 ---
 
@@ -51,13 +61,13 @@ Most startup founders receive generic, surface-level feedback on their pitches. 
 └────────┬──────────┘    └──────────┬──────────────────────┘
          │                          │ top-k similar pitches
          └──────────┬───────────────┘
-                    │ pitch + context
+                    │ pitch + retrieved context
          ┌──────────▼──────────────────┐
          │     Groq AI API (Cloud)     │
          │   llama-3.3-70b-versatile   │
          │   Persona-aware evaluation  │
          └──────────┬──────────────────┘
-                    │ structured JSON
+                    │ structured JSON evaluation
          ┌──────────▼──────────────────┐
          │   Scores + Feedback +       │
          │   Suggestions + Rewrite     │
@@ -68,7 +78,7 @@ Most startup founders receive generic, surface-level feedback on their pitches. 
 
 ## 🧠 How Endee Is Used
 
-Endee is the **core** of this system. Without vector search, the evaluation would be generic. With it, every response is grounded in real benchmark data.
+Endee is the **core** of this system. Without vector search, evaluation would be generic. With it, every response is grounded in real benchmark data.
 
 ### Index Configuration
 ```json
@@ -82,33 +92,37 @@ Endee is the **core** of this system. Without vector search, the evaluation woul
 }
 ```
 
-### Insert Flow (Seeding)
+### Insert Flow (Seeding Benchmark Data)
 ```javascript
 const client = new Endee();
 const index = await client.getIndex("pitch_index");
 await index.upsert([
-  { id: "bench_1", vector: [...384 numbers], meta: { text: "pitch example" } }
+  {
+    id: "bench_1",
+    vector: [...384 numbers],
+    meta: { text: "AI tool that fixes bugs automatically..." }
+  }
 ]);
 ```
 
-### Search Flow (Query)
+### Search Flow (Semantic Query)
 ```javascript
 const results = await index.query({ vector: userPitchVector, topK: 3 });
 // Returns: [{ id, similarity, meta: { text } }, ...]
 ```
 
 ### RAG Integration
-The retrieved similar pitches are injected into the Groq prompt as context:
+The retrieved similar pitches are injected into the AI prompt as context:
 ```
 SIMILAR SUCCESSFUL PITCHES FROM DATABASE:
 Example 1 (87% similar): AI tool that fixes bugs automatically...
 Example 2 (72% similar): Infrastructure platform for ML deployment...
 
 PITCH TO EVALUATE:
-[user's pitch]
+[user's pitch here]
 ```
 
-This grounds the AI evaluation in real benchmark examples rather than hallucinated feedback.
+This grounds the AI evaluation in real benchmark examples rather than hallucinated feedback — this is Retrieval Augmented Generation (RAG).
 
 ---
 
@@ -116,10 +130,10 @@ This grounds the AI evaluation in real benchmark examples rather than hallucinat
 
 | Layer | Technology | Purpose |
 |-------|-----------|---------|
-| Frontend | Next.js 15, TailwindCSS | UI, routing, API routes |
-| Vector DB | Endee (Docker) | Semantic similarity search |
-| Embeddings | Python, sentence-transformers | Text → vector conversion |
-| AI Model | Groq (Llama 3.3 70B) | Evaluation + feedback generation |
+| Frontend | Next.js 15, TailwindCSS | UI, routing, server-side API routes |
+| Vector DB | Endee (Docker) | Semantic similarity search, benchmark storage |
+| Embeddings | Python, sentence-transformers | Text → 384-dim vector conversion |
+| AI Model | Groq (Llama 3.3 70B) | Persona-aware evaluation + feedback |
 | Fonts | Playfair Display, DM Sans, DM Mono | Premium typography |
 
 ---
@@ -128,21 +142,22 @@ This grounds the AI evaluation in real benchmark examples rather than hallucinat
 
 ```
 pitchlens-ai/
-├── endee/                          # Endee vector database
-│   └── docker-compose.yml
+├── README.md
+├── .gitignore
 ├── frontend/                       # Next.js application
 │   ├── app/
-│   │   ├── page.tsx                # Main UI
+│   │   ├── page.tsx                # Main UI with animated results
 │   │   └── api/
-│   │       ├── search/route.ts     # Vector search endpoint
-│   │       └── evaluate/route.ts   # Full RAG pipeline
+│   │       ├── search/route.ts     # Vector search only endpoint
+│   │       └── evaluate/route.ts   # Full RAG evaluation pipeline
 │   ├── .env.local                  # API keys (not committed)
 │   └── package.json
 ├── backend/
 │   └── seed.js                     # Seeds benchmark data into Endee
 └── embedding-service/
     ├── app.py                      # Flask embedding microservice
-    └── requirements.txt
+    ├── requirements.txt
+    └── Procfile                    # For Railway deployment
 ```
 
 ---
@@ -154,9 +169,9 @@ pitchlens-ai/
 - Python 3.9+
 - Docker Desktop
 
-### Step 1 — Clone & Fork
+### Step 1 — Clone This Repo
 ```bash
-git clone https://github.com/YOUR_USERNAME/pitchlens-ai
+git clone https://github.com/neha23nov/pitchlens-ai
 cd pitchlens-ai
 ```
 
@@ -169,10 +184,16 @@ Endee dashboard available at: `http://localhost:8080`
 ### Step 3 — Start Embedding Service
 ```bash
 cd embedding-service
+
+# Windows
 python -m venv venv
-venv\Scripts\activate        # Windows
-source venv/bin/activate     # Mac/Linux
-pip install sentence-transformers flask
+venv\Scripts\activate
+
+# Mac/Linux
+python -m venv venv
+source venv/bin/activate
+
+pip install -r requirements.txt
 python app.py
 # Running on http://localhost:5001
 ```
@@ -182,7 +203,7 @@ python app.py
 cd backend
 npm install
 node seed.js
-# Inserts 10 benchmark pitch vectors into Endee
+# Inserts 10 benchmark pitch vectors into Endee pitch_index
 ```
 
 ### Step 5 — Configure API Keys
@@ -190,7 +211,7 @@ Create `frontend/.env.local`:
 ```
 GROQ_API_KEY=your_groq_key_here
 ```
-Get free key at: https://console.groq.com
+Get free Groq key at: https://console.groq.com
 
 ### Step 6 — Start Frontend
 ```bash
@@ -200,17 +221,25 @@ npm run dev
 # Running on http://localhost:3000
 ```
 
+### Step 7 — Open App
+Go to `http://localhost:3000` in your browser.
+
 ---
 
 ## 🎯 Usage
 
 1. Open `http://localhost:3000`
-2. Select an investor persona (Tech VC, Growth VC, Fintech VC, Impact Investor)
+2. Select an investor persona — Tech VC, Growth VC, Fintech VC, or Impact Investor
 3. Paste your startup pitch in the text area
 4. Click **"Analyze Pitch"**
-5. Wait ~3–5 seconds for the full evaluation
-6. Review your scores, strengths, weaknesses, and suggestions
-7. Click **"Reveal"** to see the AI-rewritten version of your pitch
+5. Watch sections reveal one by one:
+   - Overall score ring animates in
+   - Investor verdict appears
+   - Category score bars fill up
+   - Strengths and weaknesses cards appear
+   - Suggestions with numbered steps
+   - Click "Reveal" for AI-rewritten pitch
+   - Similar pitches from Endee vector DB shown at bottom
 
 ---
 
@@ -218,11 +247,42 @@ npm run dev
 
 **Vector Embeddings** — Text converted to 384-dimensional numerical vectors where semantic similarity is preserved. Similar meanings produce mathematically close vectors.
 
-**Cosine Similarity** — Measures the angle between two vectors. Used by Endee to find the most similar pitches in the database.
+**Cosine Similarity** — Measures the angle between two vectors. Used by Endee to find the most similar pitches in the database. Score of 1.0 = identical, 0.0 = completely different.
 
-**RAG (Retrieval-Augmented Generation)** — AI evaluation is grounded in retrieved benchmark data, not just model memory. This produces more specific, relevant feedback.
+**RAG (Retrieval-Augmented Generation)** — AI evaluation is grounded in retrieved benchmark data, not just model memory. This produces more specific, relevant feedback instead of generic advice.
 
-**Persona-Aware Evaluation** — The same pitch is evaluated differently based on investor type, reflecting real-world investor priorities and biases.
+**Semantic Search** — Finding similar meaning, not just matching keywords. "Doctor appointment booking" finds "healthcare scheduling platform" because the meaning is similar.
+
+**Persona-Aware Evaluation** — The same pitch is evaluated differently based on investor type, reflecting real-world investor priorities:
+- Tech VC → focuses on technical moat, scalability, innovation
+- Growth VC → focuses on traction, market size, growth rate
+- Fintech VC → focuses on compliance, revenue model, partnerships
+- Impact VC → focuses on social impact, sustainability, mission
+
+---
+
+## 🚀 Deployment
+
+| Service | Platform |
+|---------|----------|
+| Frontend | Vercel |
+| Embedding Service | Railway |
+| Vector Database | Endee Cloud |
+| AI Model | Groq API |
+
+See `DEPLOYMENT.md` for full deployment instructions.
+
+---
+
+## 🏗️ Built For
+
+Endee.io SDE Internship Evaluation — demonstrates:
+- ✅ Semantic Search using Endee vector database
+- ✅ RAG (Retrieval Augmented Generation) pipeline
+- ✅ Recommendations based on vector similarity
+- ✅ Full-stack AI application with Next.js
+- ✅ Microservice architecture with Python embedding service
+- ✅ Persona-aware AI evaluation system
 
 ---
 
