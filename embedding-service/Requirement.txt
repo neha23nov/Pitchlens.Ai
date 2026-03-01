@@ -1,5 +1,4 @@
-sentence-transformers==2.7.0
-flask==3.0.3
-gunicorn==22.0.0
-flask-cors==4.0.0
-requests==2.31.0
+sentence-transformers
+flask
+flask-cors
+requests

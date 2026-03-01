@@ -23,13 +23,13 @@ async function getEmbedding(text) {
 }
 
 async function seed() {
-  console.log("🚀 Connecting to Endee...");
+  console.log("Connecting to Endee...");
   
   const client = new Endee();
   const index = await client.getIndex(INDEX_NAME);
   
-  console.log("✅ Connected to index:", INDEX_NAME);
-  console.log("🌱 Seeding benchmark data...\n");
+  console.log(" Connected to index:", INDEX_NAME);
+  console.log(" Seeding benchmark data...\n");
 
   const vectors = [];
   
@@ -46,7 +46,7 @@ async function seed() {
   console.log("\nUpserting all vectors into Endee...");
   await index.upsert(vectors);
   
-  console.log("\n✅ Seeding complete!");
+  console.log("\n Seeding complete!");
   console.log(`Inserted ${vectors.length} benchmark pitches.`);
 }
 
