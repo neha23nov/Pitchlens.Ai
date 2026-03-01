@@ -16,6 +16,24 @@ This project was built on top of the official Endee vector database.
 
 ---
 
+## 📸 Screenshots
+
+### 1. Homepage — Persona Selection
+![Homepage](frontend/public/screenshots/demo1.png)
+
+### 2. Pitch Input
+![Pitch Input](frontend/public/screenshots/demo2.png)
+
+### 3. Score & Investor Verdict
+![Score and Verdict](frontend/public/screenshots/demo3.png)
+
+### 4. Category Scores, Strengths & Weaknesses
+![Category Scores](frontend/public/screenshots/demo4.png)
+
+### 5. Suggestions, Rewrite & Similar Pitches from Endee
+![Full Results](frontend/public/screenshots/demo5.png)
+
+---
 ## 📌 Problem Statement
 
 Most startup founders receive generic, surface-level feedback on their pitches. They have no way to benchmark their pitch against successful ones, understand how different investors evaluate their idea, or get actionable structured improvements before speaking to real investors.
